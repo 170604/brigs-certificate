@@ -139,7 +139,7 @@
       top: 63%;
       left: 10%;
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 400;
     }
 
     .card .from {
@@ -326,10 +326,6 @@
         <input type="text" id="fromName" placeholder="From Name (e.g., Jane Doe)" oninput="updatePreview()">
         
         <div class="button-group">
-            <button id="downloadPdfBtn" onclick="downloadAsPdf()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Download PDF
-            </button>
             <button id="downloadImgBtn" onclick="downloadAsImage()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Download Image
@@ -365,7 +361,7 @@
       // Update the text on the certificate card
       document.getElementById("nameField").innerText = empName;
       document.getElementById("messageField").innerText = message;
-      document.getElementById("valueField").innerText = "Values: " + valueDemoText;
+      document.getElementById("valueField").innerText = "Value Demonstrated: " + valueDemoText;
       document.getElementById("fromField").innerText = "From: " + fromName;
     }
 
@@ -406,7 +402,7 @@
 
     // NEW: This function captures the card as a PNG and triggers a download
     function downloadAsImage() {
-      ensureDataSubmitted().then(() => {
+      submitToGoogleSheet().then(() => {
         const cardElement = document.getElementById("certificateCard");
         const employeeName = document.getElementById("empName").value.trim() || "certificate";
         const fileName = `${employeeName.replace(/ /g, '_')}_certificate.png`;
