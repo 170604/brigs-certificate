@@ -140,6 +140,13 @@
       left: 10%;
       font-size: 1rem;
       font-weight: 400;
+      max-width: 50%;           /* Prevents overflow horizontally */
+      max-height: 20%;          /* Limits vertical space */
+      overflow: hidden;
+      text-overflow: ellipsis;  /* Adds ... for overflow */
+      white-space: pre-wrap;    /* Allows line breaks */
+      word-break: break-word;   /* Breaks long words */
+      hyphens: auto;            /* Adds hyphenation if needed */
     }
 
     .card .from {
