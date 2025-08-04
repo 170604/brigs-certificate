@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificate Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --primary-hover: #45a049;
+      --pdf-color: #e74c3c;
+      --pdf-hover: #c0392b;
+      --img-color: #3498db;
+      --img-hover: #2980b9;
+      --light-bg: #f4f7f6;
+      --dark-text: #2c3e50;
+      --white: #ffffff;
+      --shadow: 0 8px 25px rgba(0,0,0,0.1);
+      --light-shadow: 0 6px 15px rgba(0,0,0,0.08);
+      --border-color: #ddd;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--light-bg);
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--dark-text);
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      margin-bottom: 2rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      text-align: center;
+      color: var(--primary-color);
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      width: 100%;
+      max-width: 1600px;
+    }
+    
+    .main-content {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      width: 100%;
+    }
+
+    .form-container {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: var(--light-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      flex: 1;
+      max-width: 450px;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .card {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      aspect-ratio: 1000 / 707;
+      height: auto;
+      background-image: url('Thank You card - Draft.png'); /* Placeholder URL */
+      background-size: cover;
+      background-position: center;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      flex: 2.2;
+      max-width: 1650px;
+      aspect-ratio: 1650 / 1200;
+    }
+    
+    .card .overlay {
+      position: absolute;
+      color: #161138;
+      text-align: left;
+      width: auto;
+      left: 80px;
+      right: 320px; 
+      padding: 0;
+    }
+
+    .card .to-label {
+      top: 164px;
+      left: 32px;      
+      right: auto;
+      font-size: 22px;
+      font-weight: 600;
+      font-family: 'Pacifico', cursive;
+    }
+
+    .card .name {
+      top: 200px;
+      font-size: 38px;
+      font-family: 'Pacifico', cursive;
+    }
+
+    .card .value {
+      top: 280px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .card .message {
+      top: 330px;
+      bottom: 140px;
+      font-size: 17px;
+      line-height: 1.5;
+    }
+
+    .card .from {
+      bottom: 45px;
+      font-size: 18px;
+    }
+
+    input, textarea {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+    
+    .multiselect-dropdown {
+      position: relative;
+      width: 100%;
+    }
+    .multiselect-dropdown-btn {
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--white);
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #888;
+    }
+    .multiselect-dropdown-btn::after {
+      content: '▼';
+      font-size: 0.7rem;
+    }
+    .multiselect-dropdown-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: var(--white);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      z-index: 10;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+    }
+    .multiselect-dropdown-list.hidden {
+      display: none;
+    }
+    .multiselect-dropdown-list label {
+      display: block;
+      padding: 0.5rem 0.75rem;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .multiselect-dropdown-list label:hover {
+      background-color: var(--light-bg);
+    }
+    .multiselect-dropdown-list input[type="checkbox"] {
+      margin-right: 0.5rem;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    button {
+      font-family: 'Inter', sans-serif;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%; 
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    
+    #downloadPdfBtn {
+        background-color: var(--pdf-color);
+    }
+    
+    #downloadPdfBtn:hover {
+        background-color: var(--pdf-hover);
+    }
+
+    #downloadImgBtn {
+        background-color: var(--img-color);
+    }
+
+    #downloadImgBtn:hover {
+        background-color: var(--img-hover);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .main-content {
+        flex-direction: column;
+        align-items: center;
+      }
+      .form-container {
+        position: static;
+        width: 100%;
+        max-width: 700px;
+      }
+      .card {
+        width: 100%;
+        max-width: 700px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+        body {
+            padding: 1rem;
+        }
+        .form-container {
+            padding: 1.5rem;
+        }
+    }
+
+  </style>
+</head>
+<body>
+
+  <h1>🎉 Certificate Generator</h1>
+  <div class="container">
+    <div class="main-content">
+      <div class="form-container">
+        <h2>Certificate Details</h2>
+        <input type="text" id="empName" placeholder="Employee Name" oninput="updatePreview()">
+        
+        <div class="multiselect-dropdown" id="valueDropdownContainer">
+          <button class="multiselect-dropdown-btn" id="valueDropdownBtn">Select Values</button>
+          
+          <div class="multiselect-dropdown-list hidden" id="valueDropdownList">
+            <label><input type="checkbox" value="Empathy" onchange="updatePreview()"> Empathy</label>
+            <label><input type="checkbox" value="Innovation" onchange="updatePreview()"> Innovation</label>
+            <label><input type="checkbox" value="Collaboration" onchange="updatePreview()"> Collaboration</label>
+            <label><input type="checkbox" value="Dependability" onchange="updatePreview()"> Dependability</label>
+            <label><input type="checkbox" value="Honesty" onchange="updatePreview()"> Honesty</label>
+          </div>
+        </div>
+
+          <textarea id="message" rows="6" placeholder="Personalized Message" oninput="updatePreview()"></textarea>
+        <input type="text" id="fromName" placeholder="From Name (e.g., Jane Doe)" oninput="updatePreview()">
+        
+        <div class="button-group">
+            <button id="downloadPdfBtn" onclick="downloadAsPdf()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download PDF
+            </button>
+            <button id="downloadImgBtn" onclick="downloadAsImage()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download Image
+            </button>
+        </div>
+      </div>
+
+      <div class="card" id="certificateCard">
+        <div class="overlay to-label" id="toLabelField">TO,</div>
+        <div class="overlay name" id="nameField">Employee Name</div>
+        <div class="overlay value" id="valueField">Value Demonstrated</div>
+        <div class="overlay message" id="messageField">Greeting for Employee.</div>
+        <div class="overlay from" id="fromField">From: HR Department</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // This function updates the card preview in real-time
+    function updatePreview() {
+      const empName = document.getElementById("empName").value || "Employee Name";
+      
+      const valueCheckboxes = document.querySelectorAll('#valueDropdownList input[type="checkbox"]:checked');
+      const selectedValues = [...valueCheckboxes].map(cb => cb.value);
+      const valueDemoText = selectedValues.length > 0 ? selectedValues.join(', ') : "Value Demonstrated";
+
+      const dropdownBtn = document.getElementById('valueDropdownBtn');
+      dropdownBtn.textContent = selectedValues.length > 0 ? selectedValues.join(', ') : 'Select Values';
+
+      const message = document.getElementById("message").value || "Greeting for Employee.";
+      const fromName = document.getElementById("fromName").value || "HR Department";
+      
+      // Update the text on the certificate card
+      document.getElementById("nameField").innerText = empName;
+      document.getElementById("messageField").innerText = message;
+      document.getElementById("valueField").innerText = valueDemoText;
+      document.getElementById("fromField").innerText = "From: " + fromName;
+    }
+
+    let dataSubmitted = false;
+
+    function ensureDataSubmitted() {
+      if (dataSubmitted) return Promise.resolve();
+      return submitToGoogleSheet().then(() => { dataSubmitted = true; });
+    }
+
+    // This function captures the card as a PDF and triggers a download
+    function downloadAsPdf() {
+      ensureDataSubmitted().then(() => {
+        const { jsPDF } = window.jspdf;
+        const cardElement = document.getElementById("certificateCard");
+        const employeeName = document.getElementById("empName").value.trim() || "certificate";
+        const fileName = `${employeeName.replace(/ /g, '_')}_certificate.pdf`;
+
+        const pdfWidth = 1240;
+        const pdfHeight = 1748;
+
+       html2canvas(cardElement, { useCORS: true, scale: 3 }).then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'px',
+          format: [pdfWidth, pdfHeight]
+        });
+
+          const imgHeight = canvas.height * (pdfWidth / canvas.width);
+          const y = (pdfHeight - imgHeight) / 2;
+
+          pdf.addImage(imgData, 'PNG', 0, y, pdfWidth, imgHeight);
+          pdf.save(fileName);
+        }).catch(handleError);
+      });
+    }
+
+    // NEW: This function captures the card as a PNG and triggers a download
+    function downloadAsImage() {
+      ensureDataSubmitted().then(() => {
+        const cardElement = document.getElementById("certificateCard");
+        const employeeName = document.getElementById("empName").value.trim() || "certificate";
+        const fileName = `${employeeName.replace(/ /g, '_')}_certificate.png`;
+
+        html2canvas(cardElement, { useCORS: true, scale: 3 }).then(canvas => {
+          const link = document.createElement('a');
+          link.href = canvas.toDataURL('image/png');
+          link.download = fileName;
+          link.click();
+        }).catch(handleError);
+      });
+    }
+
+
+    
+    // Centralized error handler
+    function handleError(err) {
+        console.error('Oops, something went wrong!', err);
+        const errorBox = document.createElement('div');
+        errorBox.style.position = 'fixed';
+        errorBox.style.top = '20px';
+        errorBox.style.left = '50%';
+        errorBox.style.transform = 'translateX(-50%)';
+        errorBox.style.padding = '15px';
+        errorBox.style.backgroundColor = '#f44336';
+        errorBox.style.color = 'white';
+        errorBox.style.borderRadius = '8px';
+        errorBox.innerText = 'Error generating certificate. See console for details.';
+        document.body.appendChild(errorBox);
+        setTimeout(() => { document.body.removeChild(errorBox); }, 3000);
+    }
+
+    function submitToGoogleSheet() {
+        const name = document.getElementById("empName").value.trim();
+        const message = document.getElementById("message").value.trim();
+        const from = document.getElementById("fromName").value.trim();
+
+        const valueCheckboxes = document.querySelectorAll('#valueDropdownList input[type="checkbox"]:checked');
+        const values = [...valueCheckboxes].map(cb => cb.value).join(', ');
+
+        const data = { name, values, message, from };
+
+        // This 'no-cors' mode is the key to bypassing the browser error.
+        // It sends the data but doesn't wait to process the response from Google.
+        fetch('https://script.google.com/macros/s/AKfycby83lpzEoAc1N0TKMli22gH6MahyvSJK2Zt2pPAwKkYf5RNhDb-hTG-QGLJxRJiAdqfng/exec', {
+          method: 'POST',
+          mode: 'no-cors', // Important: Add this line
+          body: JSON.stringify(data),
+          headers: { "Content-Type": "application/json" }
+        });
+
+        // Immediately return a resolved promise so the download can start.
+        return Promise.resolve();
+    }
+
+    
+    // JavaScript for custom dropdown functionality
+    const dropdownBtn = document.getElementById('valueDropdownBtn');
+    const dropdownList = document.getElementById('valueDropdownList');
+    const dropdownContainer = document.getElementById('valueDropdownContainer');
+
+    dropdownBtn.addEventListener('click', () => {
+      dropdownList.classList.toggle('hidden');
+    });
+
+    // Close dropdown if clicked outside
+    document.addEventListener('click', (event) => {
+      if (!dropdownContainer.contains(event.target)) {
+        dropdownList.classList.add('hidden');
+      }
+    });
+
+    // Initial call to set the default state of the card
+    window.onload = updatePreview;
+  </script>
+
+</body>
+</html>
