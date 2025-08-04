@@ -107,43 +107,44 @@
       position: absolute;
       color: #161138;
       text-align: left;
-      width: auto;
-      left: 80px;
-      right: 320px; 
+      width: 70%;         /* Use percentage for width */
+      left: 5%;           /* Use percentage for left */
+      right: auto;
       padding: 0;
+      word-break: break-word;
     }
 
     .card .to-label {
-      top: 164px;
-      left: 32px;      
-      right: auto;
-      font-size: 22px;
-      font-weight: 600;
+      top: 31%;           /* Use percentage for top */
+      left: 5%;
+      font-size: 1.5rem;  /* Use rem for font size */
       font-family: 'Pacifico', cursive;
     }
 
     .card .name {
-      top: 200px;
-      font-size: 38px;
+      top: 38%;
+      left: 10%;
+      font-size: 2.2rem;
       font-family: 'Pacifico', cursive;
     }
 
     .card .value {
-      top: 280px;
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .card .message {
-      top: 330px;
-      bottom: 140px;
-      font-size: 17px;
+      top: 52%;
+      left: 10%;
+      font-size: 1.1rem;
       line-height: 1.5;
     }
 
+    .card .message{
+      top: 63%;
+      left: 10%;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
     .card .from {
-      bottom: 45px;
-      font-size: 18px;
+      bottom: 4%;
+      font-size: 1rem;
     }
 
     input, textarea {
@@ -284,6 +285,20 @@
         }
     }
 
+    /* Responsive adjustments for overlays */
+    @media (max-width: 700px) {
+      .card .overlay {
+        width: 90%;
+        left: 5%;
+        font-size: 1rem;
+      }
+      .card .name {
+        font-size: 1.3rem;
+      }
+      .card .to-label {
+        font-size: 1.1rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -323,7 +338,7 @@
       </div>
 
       <div class="card" id="certificateCard">
-        <div class="overlay to-label" id="toLabelField">TO,</div>
+        <div class="overlay to-label" id="toLabelField">To,</div>
         <div class="overlay name" id="nameField">Employee Name</div>
         <div class="overlay value" id="valueField">Value Demonstrated</div>
         <div class="overlay message" id="messageField">Greeting for Employee.</div>
@@ -350,7 +365,7 @@
       // Update the text on the certificate card
       document.getElementById("nameField").innerText = empName;
       document.getElementById("messageField").innerText = message;
-      document.getElementById("valueField").innerText = valueDemoText;
+      document.getElementById("valueField").innerText = "Values: " + valueDemoText;
       document.getElementById("fromField").innerText = "From: " + fromName;
     }
 
