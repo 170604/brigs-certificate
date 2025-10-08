@@ -1,0 +1,190 @@
+/* ======== GLOBAL & TAB STYLES ======== */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --success-color: #2ecc71;
+    --error-color: #e74c3c;
+    --light-bg: #f5f6fa;
+    --white: #ffffff;
+    --shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background-color: var(--light-bg);
+    margin: 0;
+    padding: 0;
+    color: var(--secondary-color);
+}
+
+.logo {
+    height: 50px;
+    margin-bottom: 10px;
+}
+
+.main-header {
+    background: var(--white);
+    padding: 20px 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    width: 100%;
+}
+
+.main-header h1 {
+    margin: 0 0 15px 0;
+    color: var(--secondary-color);
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tab-link {
+    padding: 10px 25px;
+    border: 1px solid #ccc;
+    background: #f1f1f1;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.tab-link:hover {
+    background: #e1e1e1;
+}
+
+.tab-link.active {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+.tab-content {
+    display: none;
+    padding: 20px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+
+/* ======== SCOPED CERTIFICATE GENERATOR STYLES ======== */
+#certificateApp .main-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    max-width: 1400px;
+    margin: 20px auto;
+    background: var(--white);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+#certificateApp .form-container {
+    flex: 1;
+    min-width: 300px;
+}
+
+#certificateApp .card-preview {
+    flex: 1.5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 400px;
+}
+
+#certificateApp #certificateCard {
+    position: relative;
+    width: 600px;
+    height: 400px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#certificateApp .card-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#certificateApp .card-overlay {
+    position: absolute;
+    color: #333;
+    padding: 5px;
+    text-align: left;
+    width: 90%;
+    left: 5%;
+}
+
+#certificateApp .titleField { top: 110px; font-size: 18px; font-weight: 500; font-family: 'Pacifico'; letter-spacing: 1px; color: #333; left: 4%; }
+#certificateApp .nameField { top: 130px; font-family: 'Pacifico', cursive; font-size: 32px; color: #0056b3; }
+#certificateApp .valueField { top: 190px; font-size: 14px; font-weight: 600; color: #555; }
+#certificateApp .fromField { bottom: 35px; font-weight: bold; font-size: 18px; }
+
+
+
+#certificateApp .messageField {
+    top: 230px; font-size: 15px; line-height: 1.4; height: 80px; overflow-y: auto;
+    width: 75%; left: 5%;
+}
+
+#certificateApp .input-group { margin-bottom: 20px; }
+#certificateApp label { display: block; margin-bottom: 8px; font-weight: 500; }
+#certificateApp input[type="text"], #certificateApp textarea {
+    width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;
+}
+#certificateApp .button-group { display: flex; gap: 10px; margin-top: 25px; }
+#certificateApp .button-group button, #certificateApp .reset-button {
+    flex: 1; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px;
+}
+#certificateApp #downloadPdfBtn { background-color: var(--error-color); color: var(--white); }
+#certificateApp #downloadImgBtn { background-color: var(--success-color); color: var(--white); }
+#certificateApp .reset-button { width: 100%; margin-top: 10px; background-color: #7f8c8d; color: var(--white); }
+#certificateApp .multi-select-dropdown { position: relative; }
+#certificateApp #dropdownBtn { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; background: white; text-align: left; cursor: pointer; }
+#certificateApp .dropdown-content { display: none; position: absolute; background-color: #f9f9f9; width: 100%; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 6px; padding: 10px; }
+#certificateApp .dropdown-content label { display: block; padding: 5px; }
+
+
+/* ======== SCOPED QUIZ STYLES (SHARED) ======== */
+.quiz-app .container, #salesQuizApp .container, #interviewQuizApp .container {
+    max-width: 800px;
+    background: var(--white);
+    padding: 30px;
+    margin: 20px auto;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.quiz-app h1, #salesQuizApp h1, #interviewQuizApp h1 { text-align: center; color: var(--secondary-color); }
+.quiz-app .desc, #salesQuizApp .desc, #interviewQuizApp .desc { text-align: center; font-size: 14px; color: #555; }
+.quiz-app .user-info, #salesQuizApp .user-info, #interviewQuizApp .user-info { display: flex; gap: 10px; margin-bottom: 20px; }
+.quiz-app .user-info input, #salesQuizApp .user-info input, #interviewQuizApp .user-info input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+.quiz-app .question, #salesQuizApp .question, #interviewQuizApp .question { margin-bottom: 20px; padding: 15px; border: 1px solid #e1e1e1; border-radius: 8px; }
+.quiz-app .question h3, #salesQuizApp .question h3, #interviewQuizApp .question h3 { font-size: 16px; margin-bottom: 10px; color: #333; }
+.quiz-app .option, #salesQuizApp .option, #interviewQuizApp .option { display: flex; align-items: center; margin-bottom: 6px; cursor: pointer; }
+.quiz-app .option input, #salesQuizApp .option input, #interviewQuizApp .option input { margin-right: 10px; }
+.quiz-app .actions, #salesQuizApp .actions, #interviewQuizApp .actions { text-align: center; margin-top: 20px; }
+.quiz-app button, #salesQuizApp button, #interviewQuizApp button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }
+.quiz-app button[type="submit"], #salesQuizApp button[type="submit"], #interviewQuizApp button[type="submit"] { background-color: var(--primary-color); color: var(--white); margin-right: 10px; }
+.quiz-app .result, #salesQuizApp .result, #interviewQuizApp .result { margin-top: 30px; padding: 20px; background-color: #ecf0f1; border-radius: 10px; display: none; }
+
+#salesQuizApp button, #interviewQuizApp button {
+    background-color: #bdc3c7;
+}
+
+#salesQuizApp button[type="submit"], #interviewQuizApp button[type="submit"] {
+    background-color: var(--primary-color);
+}
+
+.option.correct-answer span {
+    background-color: #d4edda; color: #155724; font-weight: bold; padding: 2px 5px; border-radius: 4px;
+}
+.option.wrong-answer span { text-decoration: line-through; opacity: 0.7; }
