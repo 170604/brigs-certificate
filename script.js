@@ -120,23 +120,51 @@ function initSalesQuizApp() {
     const quizContainer = document.getElementById("salesQuizContainer");
     const resultDiv = document.getElementById("salesResult");
 
+    // helper: shuffle array in-place (Fisher–Yates)
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Build quiz dynamically and set data-marks for each option
     function buildQuiz() {
         quizContainer.innerHTML = "";
         questions.forEach((qData, idx) => {
             const qDiv = document.createElement("div");
             qDiv.className = "question";
             qDiv.innerHTML = `<h3>Q${idx + 1}. ${qData.q}</h3>`;
+
+            // prepare marks for non-correct options
+            const nonCorrectMarks = shuffle([10, 15, 20]); // randomized assignment
+            let ncIndex = 0;
+
             for (const [key, val] of Object.entries(qData.options)) {
-                const marks = key === qData.answer ? 40 : [10, 15, 20][Math.floor(Math.random() * 3)];
                 const optLabel = document.createElement("label");
                 optLabel.className = "option";
-                optLabel.innerHTML = `<input type="radio" name="sq${idx}" value="${key}" data-marks="${marks}" /><span>${key}. ${val}</span>`;
+
+                // determine marks: correct gets 40, others get random 10/15/20
+                let marks = 0;
+                if (key === qData.answer) {
+                    marks = 40;
+                } else {
+                    marks = nonCorrectMarks[ncIndex++];
+                }
+
+                optLabel.innerHTML = `
+                    <input type="radio" name="sq${idx}" value="${key}" data-marks="${marks}" />
+                    <span>${key}. ${val}</span>
+                `;
                 qDiv.appendChild(optLabel);
             }
+
             quizContainer.appendChild(qDiv);
         });
     }
 
+    // Handle form submission
     quizForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -148,17 +176,47 @@ function initSalesQuizApp() {
             return;
         }
 
-        let score = 0;
+        let totalScore = 0;
+        const perQuestionResults = [];
+
         questions.forEach((qData, idx) => {
             const selected = quizContainer.querySelector(`input[name="sq${idx}"]:checked`);
-            if (selected && selected.value === qData.answer) {
-                score++;
-            }
+            const userChoice = selected ? selected.value : null;
+            const marks = selected ? parseInt(selected.getAttribute("data-marks") || "0", 10) : 0;
+            totalScore += marks;
+
+            perQuestionResults.push({
+                qIndex: idx + 1,
+                question: qData.q,
+                correct: qData.answer,
+                userChoice,
+                marksAwarded: marks,
+                correctText: qData.options[qData.answer],
+                userText: userChoice ? qData.options[userChoice] : null
+            });
         });
 
+        // show summary & per-question breakdown
         resultDiv.style.display = "block";
-        resultDiv.innerHTML = `<h2>Your Score: ${score} / ${questions.length}</h2>`;
+        let html = `<h2>Your Total Score: ${totalScore}</h2>`;
+        html += `<p>Correct answer = 40 marks. Other options were randomly assigned 10 / 15 / 20 for each question.</p>`;
+        html += `<hr />`;
+        html += `<div class="breakdown">`;
 
+        perQuestionResults.forEach(r => {
+            const correctBadge = (r.userChoice === r.correct) ? '✅ Correct' : '❌ Wrong';
+            html += `<div class="q-result">
+                        <strong>Q${r.qIndex}.</strong> ${r.question}<br/>
+                        Your answer: <em>${r.userChoice ? r.userChoice + '. ' + r.userText : '<span style="color:gray">No answer</span>'}</em><br/>
+                        Correct answer: <em>${r.correct}. ${r.correctText}</em><br/>
+                        Marks awarded: <strong>${r.marksAwarded}</strong> — ${correctBadge}
+                     </div><hr/>`;
+        });
+
+        html += `</div>`;
+        resultDiv.innerHTML = html;
+
+        // Save to Google Sheet
         try {
             await fetch(GAS_WEBHOOK_URL, {
                 method: "POST",
@@ -167,17 +225,24 @@ function initSalesQuizApp() {
                     app: "salesQuiz",
                     name,
                     employeeId,
-                    score: `${score}/${questions.length}`
+                    score: totalScore,
+                    details: perQuestionResults
                 })
             });
-            resultDiv.innerHTML += `<p>✅ Result saved.</p>`;
+            resultDiv.innerHTML += `<p>✅ Result saved successfully.</p>`;
         } catch (err) {
             console.error("Error saving result:", err);
             resultDiv.innerHTML += `<p>⚠️ Could not save result.</p>`;
         }
     });
 
-    document.getElementById("salesQuizResetBtn").addEventListener("click", () => { quizForm.reset(); resultDiv.style.display = 'none'; });
+
+    // Reset Quiz
+    document.getElementById("salesQuizResetBtn").addEventListener("click", () => {
+        quizForm.reset();
+        resultDiv.style.display = "none";
+    });
+
     buildQuiz();
 }
 
@@ -232,7 +297,6 @@ function initInterviewQuiz() {
     const quizContainer = document.getElementById("interviewQuizContainer");
     const resultDiv = document.getElementById("interviewResult");
 
-    // Build quiz UI dynamically
     function buildQuiz() {
         quizContainer.innerHTML = "";
         questions.forEach((qData, idx) => {
@@ -253,31 +317,58 @@ function initInterviewQuiz() {
         });
     }
 
-    // Handle form submission
     quizForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        
         const name = document.getElementById("interviewName").value.trim();
-        const email = document.getElementById("interviewMailID").value.trim();
+        const employeeId = document.getElementById("interviewEmployeeId").value.trim(); // Corrected ID and variable
         const location = document.getElementById("location").value.trim();
 
-        if (!name || !email || !location) {
-            alert("Please fill in all details: Name, Email, and Location.");
+        if (!name || !employeeId) { // This now works correctly
+            alert("Please fill in your Name and Employee ID.");
             return;
         }
 
-        let score = 0;
+        let totalScore = 0;
+        const perQuestionResults = [];
+
         questions.forEach((qData, idx) => {
             const selected = quizContainer.querySelector(`input[name="iq${idx}"]:checked`);
-            if (selected && selected.value === qData.answer) {
-                score++;
-            }
+            const userChoice = selected ? selected.value : null;
+            const correct = userChoice === qData.answer;
+
+            if (correct) totalScore += 1; // existing 1-mark scoring
+
+            perQuestionResults.push({
+                qIndex: idx + 1,
+                question: qData.q,
+                correct: qData.answer,
+                userChoice,
+                correctText: qData.options[qData.answer],
+                userText: userChoice ? qData.options[userChoice] : null,
+                isCorrect: correct
+            });
         });
 
-        const totalScore = `${score}/${questions.length}`;
+        // Display result
         resultDiv.style.display = "block";
-        resultDiv.innerHTML = `<h2>Your Score: ${totalScore}</h2>`;
+        let html = `<h2>Your Total Score: ${totalScore} / ${questions.length}</h2>`;
+        html += `<p>✅ Correct = 1 mark | ❌ Wrong = 0 marks</p><hr/>`;
 
+        perQuestionResults.forEach(r => {
+            const badge = r.isCorrect ? '✅ Correct' : '❌ Wrong';
+            html += `<div class="q-result">
+                        <strong>Q${r.qIndex}.</strong> ${r.question}<br/>
+                        Your answer: <em>${r.userChoice ? r.userChoice + '. ' + r.userText : '<span style="color:gray">No answer</span>'}</em><br/>
+                        Correct answer: <em>${r.correct}. ${r.correctText}</em><br/>
+                        ${badge}
+                     </div><hr/>`;
+        });
+
+        resultDiv.innerHTML = html;
+
+        // Save to Google Sheet
         try {
             await fetch(GAS_WEBHOOK_URL, {
                 method: "POST",
@@ -285,15 +376,16 @@ function initInterviewQuiz() {
                 body: JSON.stringify({
                     app: "interviewQuiz",
                     name,
-                    email,
+                    employeeId,
                     location,
-                    score: totalScore
+                    score: totalScore,
+                    details: perQuestionResults
                 })
             });
-            resultDiv.innerHTML += `<p>✅ Result successfully saved to Google Sheet.</p>`;
-        } catch (error) {
-            console.error("Error submitting data:", error);
-            resultDiv.innerHTML += `<p>⚠️ Could not save result. Check console for details.</p>`;
+            resultDiv.innerHTML += `<p>✅ Result saved successfully.</p>`;
+        } catch (err) {
+            console.error("Error saving result:", err);
+            resultDiv.innerHTML += `<p>⚠️ Could not save result.</p>`;
         }
     });
 
