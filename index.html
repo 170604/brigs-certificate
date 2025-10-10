@@ -1,127 +1,131 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ProTools Suite - Certificate & Quiz Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Pacifico&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-    <header class="main-header">
-        <img src="Logo.png" alt="ProTools Logo" class="logo" />
-        <h1>ProTools Suite</h1>
-        <nav class="tabs">
-            <button class="tab-link active" data-tab="certificateApp">Certificate Generator</button>
-            <button class="tab-link" data-tab="salesQuizApp">Sales Skills Quiz</button>
-            <button class="tab-link" data-tab="interviewQuizApp">Interview Quiz</button>
-        </nav>
-    </header>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ProTools Suite - Certificate & Quiz Hub</title>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Pacifico&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <header class="main-header">
+            <img src="logo.png" alt="ProTools Logo" class="logo" />
+            <h1>ProTools Suite</h1>
+            <nav class="tabs">
+                <button class="tab-link active" data-tab="certificateApp">Certificate Generator</button>
+                <button class="tab-link" data-tab="salesQuizApp">Sales Skills Quiz</button>
+                <button class="tab-link" data-tab="interviewQuizApp">Interview Quiz</button>
+            </nav>
+        </header>
 
-    <main>
-        <!-- ======== CERTIFICATE GENERATOR CONTENT ======== -->
-        <div id="certificateApp" class="tab-content active">
-            <div class="main-container">
-                <div class="form-container">
-                    <h1>Certificate Generator</h1>
-                    <p>Fill in the details below to generate your thank you card.</p>
-                    <div class="input-group">
-                        <label for="empName">Employee Name</label>
-                        <input type="text" id="empName" placeholder="e.g., Jane Doe" />
-                    </div>
-                    <div class="input-group">
-                        <label>Values Demonstrated</label>
-                        <div class="multi-select-dropdown">
-                            <button id="dropdownBtn">Select Values</button>
-                            <div id="valueDropdownList" class="dropdown-content">
-                                <label><input type="checkbox" value="Empathy" /> Empathy</label>
-                                <label><input type="checkbox" value="Innovation" /> Innovation</label>
-                                <label><input type="checkbox" value="Excellence" /> Excellence</label>
-                                <label><input type="checkbox" value="Collaboration" /> Collaboration</label>
-                                <label><input type="checkbox" value="Integrity" /> Integrity</label>
+        <main>
+            <!-- ======== CERTIFICATE GENERATOR CONTENT ======== -->
+            <div id="certificateApp" class="tab-content active">
+                <div class="main-container">
+                    <div class="form-container">
+                        <h1>Certificate Generator</h1>
+                        <p>Fill in the details below to generate your thank you card.</p>
+                        <div class="input-group">
+                            <label for="empName">Employee Name</label>
+                            <input type="text" id="empName" placeholder="e.g., Jane Doe" />
+                        </div>
+                        <div class="input-group">
+                            <label>Values Demonstrated</label>
+                            <div class="multi-select-dropdown">
+                                <button id="dropdownBtn">Select Values</button>
+                                <div id="valueDropdownList" class="dropdown-content">
+                                    <label><input type="checkbox" value="Empathy" /> Empathy</label>
+                                    <label><input type="checkbox" value="Innovation" /> Innovation</label>
+                                    <label><input type="checkbox" value="Excellence" /> Excellence</label>
+                                    <label><input type="checkbox" value="Collaboration" /> Collaboration</label>
+                                    <label><input type="checkbox" value="Integrity" /> Integrity</label>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="input-group">
-                        <label for="message">Personalized Message</label>
-                        <textarea id="message" rows="4" placeholder="e.g., Thank you for your outstanding contribution..."></textarea>
-                    </div>
-                    <div class="input-group">
-                        <label for="fromName">From Name</label>
-                        <input type="text" id="fromName" placeholder="e.g., John Smith" />
-                    </div>
-                    <div class="button-group">
+                        <div class="input-group">
+                            <label for="message">Personalized Message</label>
+                            <textarea id="message" rows="4" placeholder="e.g., Thank you for your outstanding contribution..."></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="fromName">From Name</label>
+                            <input type="text" id="fromName" placeholder="e.g., John Smith" />
+                        </div>
+                        <div class="button-group">
 
-                        <button id="downloadImgBtn">Download Image</button>
+                            <button id="downloadImgBtn">Download Image</button>
+                        </div>
+                        <button id="crtResetBtn" class="reset-button">Reset Form</button>
                     </div>
-                    <button id="crtResetBtn" class="reset-button">Reset Form</button>
-                </div>
-                <div class="card-preview">
-                    <div id="certificateCard">
-                        <img src="crt.png" alt="Certificate Background" class="card-bg">
-                        <div class="card-overlay titleField">To,</div>
-                        <div class="card-overlay nameField">Employee Name</div>
-                        <div class="card-overlay valueField">Values Here</div>
-                        <div class="card-overlay messageField">Personalized message goes here. Thanks for all the hard work and effort!</div>
-                        <div class="card-overlay fromField">From Name</div>
+                    <div class="card-preview">
+                        <div id="certificateCard">
+                            <img src="crt.png" alt="Certificate Background" class="card-bg">
+                            <div class="card-overlay titleField">To,</div>
+                            <div class="card-overlay nameField">Employee Name</div>
+                            <div class="card-overlay valueField">Values Here</div>
+                            <div class="card-overlay messageField">Personalized message goes here. Thanks for all the hard work and effort!</div>
+                            <div class="card-overlay fromField">From Name</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- ======== SALES SKILLS QUIZ CONTENT ======== -->
-        <div id="salesQuizApp" class="tab-content">
-            <div class="container">
-                <h1>Sales Skills Quiz</h1>
-                <p class="desc">
-                    Fill in your details and answer all questions.<br />
-                    Correct = <b>40 marks</b>. Other choices = random (10 / 15 / 20).
-                </p>
-                <form id="salesQuizForm">
-                    <div class="user-info">
-                        <input type="text" id="salesName" placeholder="Enter your name" required />
-                        <input type="text" id="salesEmployeeId" placeholder="Enter your employee ID" required />
-                    </div>
-                    <div id="salesQuizContainer"></div>
-                    <div class="actions">
-                        <button type="submit">Submit Quiz</button>
-                        <button type="button" id="salesQuizResetBtn">Reset</button>
-                    </div>
-                </form>
-                <div id="salesResult" class="result"></div>
+            <!-- ======== SALES SKILLS QUIZ CONTENT ======== -->
+            <div id="salesQuizApp" class="tab-content">
+                <div class="container">
+                    <h1>Sales Skills Quiz</h1>
+                    <p class="desc">
+                        Fill in your details and answer all questions.<br />
+                        Correct = <b>40 marks</b>. Other choices = random (10 / 15 / 20).
+                    </p>
+                    <form id="salesQuizForm">
+                        <div class="user-info">
+                            <input type="text" id="salesName" placeholder="Enter your name" required />
+                            <input type="text" id="salesEmployeeId" placeholder="Enter your employee ID" required />
+                        </div>
+                        <div id="salesQuizContainer"></div>
+                        <div class="actions">
+                            <button type="submit">Submit Quiz</button>
+                            <button type="button" id="salesQuizResetBtn">Reset</button>
+                        </div>
+                    </form>
+                    <div id="salesResult" class="result"></div>
+                </div>
             </div>
-        </div>
-        
-        <!-- ======== INTERVIEW QUIZ CONTENT ======== -->
-        <div id="interviewQuizApp" class="tab-content">
-            <div class="container">
-                <h1>Interview Quiz</h1>
-                <p class="desc">
-                    Answer all questions to the best of your ability.
-                </p>
-                <form id="interviewQuizForm">
-                    <div class="user-info">
-                        <input type="text" id="interviewName" placeholder="Enter your name" required />
-                        <input type="text" id="interviewMailID" placeholder="Enter your MailID" required />
-                        <input type="text" id="location" placeholder="Enter your location" required />
-                    </div>
-                    <div id="interviewQuizContainer"></div>
-                    <div class="actions">
-                        <button type="submit">Submit Quiz</button>
+            
+            <!-- ======== INTERVIEW QUIZ CONTENT ======== -->
+            <div id="interviewQuizApp" class="tab-content">
+                <div class="container">
+                    <h1>Interview Quiz</h1>
+                    <p class="desc">
+                        Answer all questions to the best of your ability.
+                    </p>
+                    <form id="interviewQuizForm">
+                        <label for="interviewName">Name:</label>
+                        <input type="text" id="interviewName" placeholder="Enter your name" required>
+
+                        <label for="interviewEmployeeId">Employee ID:</label>
+                        <input type="text" id="interviewEmployeeId" placeholder="Enter Employee ID" required>
+
+                        <label for="location">Location:</label>
+                        <input type="text" id="location" placeholder="Enter your location" required>
+
+                        <div id="interviewQuizContainer"></div>
+
+                        <button type="submit">Submit</button>
                         <button type="button" id="interviewQuizResetBtn">Reset</button>
-                    </div>
-                </form>
-                <div id="interviewResult" class="result"></div>
+                    </form>
+
+                    <div id="interviewResult" style="display:none;"></div>
+
+                </div>
             </div>
-        </div>
-    </main>
+        </main>
 
-    <!-- External libraries used by Certificate Generator -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
-    <!-- Combined and refactored script -->
-    <script src="script.js"></script>
-</body>
-</html>
-
+        <!-- External libraries used by Certificate Generator -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        
+        <!-- Combined and refactored script -->
+        <script src="script.js"></script>
+    </body>
+    </html>
