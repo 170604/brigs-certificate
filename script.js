@@ -326,8 +326,8 @@ function initInterviewQuiz() {
         const location = document.getElementById("location").value.trim();
 
 
-        if (!name || !employeeId) { // This now works correctly
-            alert("Please fill in your Name and Employee ID.");
+        if (!name || !email) { // This now works correctly
+            alert("Please fill in your Name and Email.");
             return;
         }
 
@@ -397,6 +397,7 @@ function initInterviewQuiz() {
 
     buildQuiz();
 }
+
 
 
 
