@@ -36,7 +36,7 @@ function initCertificateApp() {
     const cardElement = document.getElementById("certificateCard");
 
     let dataSubmitted = false;
-    const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw8M-UW7Xxbbh2JAsLT0EDu_eGNF7aV9pjfs0vNrz0BT-3yyyMAITiLKZ7RAIKBKHMN/exec"; 
+    const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbz6UZzsz4BwYHWPWo6Nmr2bH-CYpFbkjTpzygQU0cq-CUaZjMKUJUGfkvS2oW8Fqv9GrA/exec"; 
 
     async function submitToGoogleSheet() {
         const payload = {
@@ -97,7 +97,7 @@ function initCertificateApp() {
 
 // ======== SALES SKILLS QUIZ APP LOGIC ========
 function initSalesQuizApp() {
-    const GAS_WEBHOOK_URL ="https://script.google.com/macros/s/AKfycbw8M-UW7Xxbbh2JAsLT0EDu_eGNF7aV9pjfs0vNrz0BT-3yyyMAITiLKZ7RAIKBKHMN/exec"; 
+    const GAS_WEBHOOK_URL ="https://script.google.com/macros/s/AKfycbz6UZzsz4BwYHWPWo6Nmr2bH-CYpFbkjTpzygQU0cq-CUaZjMKUJUGfkvS2oW8Fqv9GrA/exec"; 
     const questions = [
         {"q":"When starting to generate leads, what’s your first priority?","answer":"A","options":{"A":"Building a target list","B":"Leveraging referrals","C":"Using digital tools","D":"Attending events"}},
         {"q":"How would you begin a cold call?","answer":"D","options":{"A":"Quickly share benefits","B":"Understand needs/challenges","C":"Introduce company","D":"Connect on recent expansion"}},
@@ -249,7 +249,7 @@ function initSalesQuizApp() {
 // ======== INTERVIEW QUIZ APP LOGIC ========
 // ======== INTERVIEW QUIZ APP LOGIC ========
 function initInterviewQuiz() {
-    const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw8M-UW7Xxbbh2JAsLT0EDu_eGNF7aV9pjfs0vNrz0BT-3yyyMAITiLKZ7RAIKBKHMN/exec";
+    const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbz6UZzsz4BwYHWPWo6Nmr2bH-CYpFbkjTpzygQU0cq-CUaZjMKUJUGfkvS2oW8Fqv9GrA/exec";
 
     const questions = [
         {"q": "If a salesperson sells 5 units of a product at Rs20 each and offers a 10% discount, what is the total revenue?", "answer": "B", "options": {"A": "90", "B": "95", "C": "100", "D": "110"}},
@@ -396,3 +396,4 @@ function initInterviewQuiz() {
 
     buildQuiz();
 }
+
