@@ -322,8 +322,9 @@ function initInterviewQuiz() {
 
         
         const name = document.getElementById("interviewName").value.trim();
-        const employeeId = document.getElementById("interviewEmployeeId").value.trim(); // Corrected ID and variable
+        const email = document.getElementById("interviewEmail").value.trim(); // Changed to get email
         const location = document.getElementById("location").value.trim();
+
 
         if (!name || !employeeId) { // This now works correctly
             alert("Please fill in your Name and Employee ID.");
@@ -376,7 +377,7 @@ function initInterviewQuiz() {
                 body: JSON.stringify({
                     app: "interviewQuiz",
                     name,
-                    employeeId,
+                    email,
                     location,
                     score: totalScore,
                     details: perQuestionResults
@@ -396,6 +397,7 @@ function initInterviewQuiz() {
 
     buildQuiz();
 }
+
 
 
 
