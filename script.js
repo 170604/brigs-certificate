@@ -165,58 +165,54 @@ function initSalesQuizApp() {
     }
 
     // Handle form submission
+ // Handle form submission (FIXED FOR ANSWER SAVING)
     quizForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-
+    
         const name = document.getElementById("salesName").value.trim();
         const employeeId = document.getElementById("salesEmployeeId").value.trim();
-
+    
         if (!name || !employeeId) {
             alert("Please fill in your Name and Employee ID.");
             return;
         }
-
+    
         let totalScore = 0;
-        const perQuestionResults = [];
-
+        const perQuestionResults = [];  // ✅ Ensured always built
+    
         questions.forEach((qData, idx) => {
             const selected = quizContainer.querySelector(`input[name="sq${idx}"]:checked`);
-            const userChoice = selected ? selected.value : null;
+            const userChoice = selected ? selected.value : "N/A";
             const marks = selected ? parseInt(selected.getAttribute("data-marks") || "0", 10) : 0;
+    
             totalScore += marks;
-
+    
+            // ✅ Short answer format for Google Sheet
             perQuestionResults.push({
                 qIndex: idx + 1,
-                question: qData.q,
-                correct: qData.answer,
-                userChoice,
-                marksAwarded: marks,
-                correctText: qData.options[qData.answer],
-                userText: userChoice ? qData.options[userChoice] : null
+                userChoice: userChoice,
+                correct: qData.answer
             });
         });
-
-        // show summary & per-question breakdown
+    
+        // Show result in UI
         resultDiv.style.display = "block";
         let html = `<h2>Your Total Score: ${totalScore}</h2>`;
-        html += `<p>Correct answer = 40 marks. Other options were randomly assigned 10 / 15 / 20 for each question.</p>`;
-        html += `<hr />`;
-        html += `<div class="breakdown">`;
-
+        html += `<p>Correct answer = 40 marks. Other options were randomly assigned 10 / 15 / 20.</p><hr/>`;
+    
         perQuestionResults.forEach(r => {
-            const correctBadge = (r.userChoice === r.correct) ? '✅ Correct' : '❌ Wrong';
+            const badge = (r.userChoice === r.correct) ? '✅ Correct' : '❌ Wrong';
             html += `<div class="q-result">
-                        <strong>Q${r.qIndex}.</strong> ${r.question}<br/>
-                        Your answer: <em>${r.userChoice ? r.userChoice + '. ' + r.userText : '<span style="color:gray">No answer</span>'}</em><br/>
-                        Correct answer: <em>${r.correct}. ${r.correctText}</em><br/>
-                        Marks awarded: <strong>${r.marksAwarded}</strong> — ${correctBadge}
-                     </div><hr/>`;
+                        <strong>Q${r.qIndex}.</strong>
+                        Your answer: <em>${r.userChoice}</em><br/>
+                        Correct answer: <em>${r.correct}</em><br/>
+                        Marks awarded: <strong>${r.userChoice === r.correct ? 40 : '10/15/20'}</strong> — ${badge}
+                    </div><hr/>`;
         });
-
-        html += `</div>`;
+    
         resultDiv.innerHTML = html;
-
-        // Save to Google Sheet
+    
+        // ✅ SEND TO GOOGLE SHEET WITH PROPER ANSWER FORMAT
         try {
             await fetch(GAS_WEBHOOK_URL, {
                 method: "POST",
@@ -226,7 +222,7 @@ function initSalesQuizApp() {
                     name,
                     employeeId,
                     score: totalScore,
-                    details: perQuestionResults
+                    details: perQuestionResults   // ✅ NOW ALWAYS INCLUDED
                 })
             });
             resultDiv.innerHTML += `<p>✅ Result saved successfully.</p>`;
@@ -235,7 +231,6 @@ function initSalesQuizApp() {
             resultDiv.innerHTML += `<p>⚠️ Could not save result.</p>`;
         }
     });
-
 
     // Reset Quiz
     document.getElementById("salesQuizResetBtn").addEventListener("click", () => {
@@ -253,5 +248,6 @@ function initSalesQuizApp() {
 
     buildQuiz();
 }
+
 
 
