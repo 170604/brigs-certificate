@@ -249,219 +249,198 @@ function initSalesQuizApp() {
 
 // ======== COMPLAINT REGISTER LOGIC ========
 function initComplaintApp() {
-    // ✅ Public Google Apps Script Webhook
-    const COMPLAINT_GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzaaKY8uSApVqpA0zS_bvMTAse2nGeN-KY9SrLgrdqH84OW5feiAvYFUTU3Lt5ux2hp/exec";
+  // ✅ Google Apps Script Webhook (public URL, not workspace-restricted)
+  const COMPLAINT_GAS_WEBHOOK_URL =
+    "https://script.google.com/macros/s/AKfycbzZ7Vy3iIsXieaOtQDGB8FSl9OXue5e7z49W6Zz3d87QrI7kmpPGBzzmHtWM1oJxJhc/exec";
 
-    // Elements
-    const complaintIdInput = document.getElementById("complaintId");
-    const complaintTitleInput = document.getElementById("complaintTitle");
-    const referenceImageInput = document.getElementById("referenceImage");
-    const imagePreview = document.getElementById("imagePreview");
-    const imagePreviewImg = document.getElementById("imagePreviewImg");
-    const clearImageBtn = document.getElementById("clearImageBtn");
-    const registeredDateInput = document.getElementById("registeredDate");
-    const timelineInput = document.getElementById("timeline");
-    const statusInput = document.getElementById("status");
-    const resolvedDateInput = document.getElementById("resolvedDate");
-    const toBeResolvedByInput = document.getElementById("toBeResolvedBy");
-    const complainedByInput = document.getElementById("complainedBy");
-    const companyDetailsInput = document.getElementById("companyDetails");
-    const rootCauseInput = document.getElementById("rootCause");
-    const correctiveActionInput = document.getElementById("correctiveAction");
-    const customerDetailsInput = document.getElementById("customerDetails");
-    const customerConfirmationInput = document.getElementById("customerConfirmation");
-    const remarkInput = document.getElementById("remark");
-    const submitBtn = document.getElementById("complaintSubmitBtn");
-    const resetBtn = document.getElementById("complaintResetBtn");
-    const msgBox = document.getElementById("complaintMsg");
+  // === Element references ===
+  const complaintIdInput = document.getElementById("complaintId");
+  const complaintTitleInput = document.getElementById("complaintTitle");
+  const referenceImageInput = document.getElementById("referenceImage");
+  const imagePreview = document.getElementById("imagePreview");
+  const imagePreviewImg = document.getElementById("imagePreviewImg");
+  const clearImageBtn = document.getElementById("clearImageBtn");
+  const registeredDateInput = document.getElementById("registeredDate");
+  const timelineInput = document.getElementById("timeline");
+  const statusInput = document.getElementById("status");
+  const resolvedDateInput = document.getElementById("resolvedDate");
+  const toBeResolvedByInput = document.getElementById("toBeResolvedBy");
+  const complainedByInput = document.getElementById("complainedBy");
+  const companyDetailsInput = document.getElementById("companyDetails");
+  const rootCauseInput = document.getElementById("rootCause");
+  const correctiveActionInput = document.getElementById("correctiveAction");
+  const customerDetailsInput = document.getElementById("customerDetails");
+  const customerConfirmationInput = document.getElementById("customerConfirmation");
+  const remarkInput = document.getElementById("remark");
+  const submitBtn = document.getElementById("complaintSubmitBtn");
+  const resetBtn = document.getElementById("complaintResetBtn");
+  const msgBox = document.getElementById("complaintMsg");
 
-    // localStorage keys
-    const SEQ_KEY_PREFIX = "complaint_seq_";
-    const PENDING_ID_KEY = "complaint_pending_id";
-    let currentImageBase64 = "";
+  // === Local storage keys ===
+  const SEQ_KEY_PREFIX = "complaint_seq_";
+  const PENDING_ID_KEY = "complaint_pending_id";
+  let currentImageBase64 = "";
 
-    // ====== Utility Functions ======
-    function formatDateForId(d) {
-        const dd = String(d.getDate()).padStart(2, "0");
-        const mm = String(d.getMonth() + 1).padStart(2, "0");
-        const yyyy = d.getFullYear();
-        return `${dd}${mm}${yyyy}`;
+  // === Helpers ===
+  function formatDateForId(d) {
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+    return `${dd}${mm}${yyyy}`;
+  }
+
+  function getPendingIdOrCreate() {
+    const today = new Date();
+    const datePart = formatDateForId(today);
+    const seqKey = SEQ_KEY_PREFIX + datePart;
+
+    const storedPending = localStorage.getItem(PENDING_ID_KEY);
+    if (storedPending && !storedPending.includes(datePart)) {
+      localStorage.removeItem(PENDING_ID_KEY);
     }
 
-    function getPendingIdOrCreate() {
-        const today = new Date();
-        const datePart = formatDateForId(today);
-        const seqKey = SEQ_KEY_PREFIX + datePart;
+    const pendingNow = localStorage.getItem(PENDING_ID_KEY);
+    if (pendingNow && pendingNow.includes(datePart)) return pendingNow;
 
-        // Clear old pending ID if date changed
-        const storedPending = localStorage.getItem(PENDING_ID_KEY);
-        if (storedPending && !storedPending.includes(datePart)) {
-            localStorage.removeItem(PENDING_ID_KEY);
-        }
+    let seq = parseInt(localStorage.getItem(seqKey) || "0", 10);
+    if (seq === 0) seq = 40;
+    const seqStr = String(seq).padStart(4, "0");
+    const newId = `CMP-${datePart}-${seqStr}`;
+    localStorage.setItem(PENDING_ID_KEY, newId);
+    localStorage.setItem(seqKey, String(seq));
+    return newId;
+  }
 
-        // If there’s already a pending ID for today
-        const pendingNow = localStorage.getItem(PENDING_ID_KEY);
-        if (pendingNow && pendingNow.includes(datePart)) return pendingNow;
+  function incrementSeqAfterSubmit() {
+    const today = new Date();
+    const datePart = formatDateForId(today);
+    const seqKey = SEQ_KEY_PREFIX + datePart;
+    let seq = parseInt(localStorage.getItem(seqKey) || "40", 10);
+    seq++;
+    localStorage.setItem(seqKey, String(seq));
+  }
 
-        // Start new day sequence
-        let seq = parseInt(localStorage.getItem(seqKey) || "0", 10);
-        if (seq === 0) seq = 40; // start from 0040
-        const seqStr = String(seq).padStart(4, "0");
-        const newId = `CMP-${datePart}-${seqStr}`;
-        localStorage.setItem(PENDING_ID_KEY, newId);
-        localStorage.setItem(seqKey, String(seq));
-        return newId;
+  function initForm() {
+    const pendingId = getPendingIdOrCreate();
+    complaintIdInput.value = pendingId;
+
+    const today = new Date();
+    registeredDateInput.value = `${String(today.getDate()).padStart(2, "0")}/${String(
+      today.getMonth() + 1
+    ).padStart(2, "0")}/${today.getFullYear()}`;
+
+    toBeResolvedByInput.value = "";
+    statusInput.value = "Pending";
+    rootCauseInput.value = "N/A";
+  }
+
+  // === Image preview ===
+  referenceImageInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file");
+      referenceImageInput.value = "";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      currentImageBase64 = evt.target.result;
+      imagePreviewImg.src = currentImageBase64;
+      imagePreview.style.display = "flex";
+    };
+    reader.readAsDataURL(file);
+  });
+
+  clearImageBtn.addEventListener("click", () => {
+    referenceImageInput.value = "";
+    currentImageBase64 = "";
+    imagePreviewImg.src = "";
+    imagePreview.style.display = "none";
+  });
+
+  // === Submit handler ===
+  submitBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      app: "complaint",
+      complaintId: complaintIdInput.value.trim(),
+      complaint: complaintTitleInput.value.trim(),
+      referenceImage: currentImageBase64 || "",
+      registeredDate: registeredDateInput.value,
+      timeline: timelineInput.value,
+      status: statusInput.value,
+      resolvedDate: resolvedDateInput.value,
+      toBeResolvedBy: toBeResolvedByInput.value.trim(),
+      complainedBy: complainedByInput.value.trim(),
+      companyDetails: companyDetailsInput.value.trim(),
+      rootCause: rootCauseInput.value.trim(),
+      correctiveAction: correctiveActionInput.value.trim(),
+      customerDetails: customerDetailsInput.value.trim(),
+      customerConfirmation: customerConfirmationInput.value,
+      remark: remarkInput.value.trim(),
+    };
+
+    if (!payload.complaint || !payload.complainedBy) {
+      showMessage("Please fill in Complaint and Complained By fields.", true);
+      return;
     }
 
-    function incrementSeqAfterSubmit() {
-        const today = new Date();
-        const datePart = formatDateForId(today);
-        const seqKey = SEQ_KEY_PREFIX + datePart;
-        let seq = parseInt(localStorage.getItem(seqKey) || "40", 10);
-        seq++;
-        localStorage.setItem(seqKey, String(seq));
+    showMessage("Submitting complaint...");
+
+    try {
+      // ✅ Using no-cors for cross-domain POST to Apps Script
+      await fetch(COMPLAINT_GAS_WEBHOOK_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify(payload),
+      });
+
+      incrementSeqAfterSubmit();
+      localStorage.removeItem(PENDING_ID_KEY);
+
+      showMessage("Complaint submitted successfully ✅", false, 4000);
+      resetComplaintForm_keepId();
+    } catch (err) {
+      console.error("Submit error:", err);
+      showMessage("Error submitting complaint. Please check Apps Script.", true);
     }
+  });
 
-    function initForm() {
-        const pendingId = getPendingIdOrCreate();
-        complaintIdInput.value = pendingId;
+  resetBtn.addEventListener("click", () => {
+    resetComplaintForm_keepId();
+    showMessage("Form reset. Complaint ID preserved.", false, 2500);
+  });
 
-        const today = new Date();
-        const registered = `${String(today.getDate()).padStart(2, "0")}/${String(today.getMonth() + 1).padStart(2, "0")}/${today.getFullYear()}`;
-        registeredDateInput.value = registered;
+  function resetComplaintForm_keepId() {
+    const pendingId = localStorage.getItem(PENDING_ID_KEY) || getPendingIdOrCreate();
+    complaintIdInput.value = pendingId;
+    complaintTitleInput.value = "";
+    referenceImageInput.value = "";
+    currentImageBase64 = "";
+    imagePreviewImg.src = "";
+    imagePreview.style.display = "none";
+    timelineInput.value = "";
+    statusInput.value = "Pending";
+    resolvedDateInput.value = "";
+    toBeResolvedByInput.value = "";
+    complainedByInput.value = "";
+    companyDetailsInput.value = "";
+    rootCauseInput.value = "N/A";
+    correctiveActionInput.value = "";
+    customerDetailsInput.value = "";
+    customerConfirmationInput.value = "Pending";
+    remarkInput.value = "";
+  }
 
-        toBeResolvedByInput.value = "";
-        statusInput.value = "Pending";
-    }
+  function showMessage(text, isError = false, timeout = 3000) {
+    msgBox.style.display = "block";
+    msgBox.textContent = text;
+    msgBox.style.backgroundColor = isError ? "#fdecea" : "#e9f7ef";
+    msgBox.style.color = isError ? "#7f1d1d" : "#115e1b";
+    if (timeout) setTimeout(() => (msgBox.style.display = "none"), timeout);
+  }
 
-    // ====== Image Upload Preview ======
-    referenceImageInput.addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        if (!file.type.startsWith("image/")) {
-            alert("Please select a valid image file");
-            referenceImageInput.value = "";
-            return;
-        }
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-            currentImageBase64 = evt.target.result;
-            imagePreviewImg.src = currentImageBase64;
-            imagePreview.style.display = "flex";
-        };
-        reader.readAsDataURL(file);
-    });
-
-    clearImageBtn.addEventListener("click", () => {
-        referenceImageInput.value = "";
-        currentImageBase64 = "";
-        imagePreviewImg.src = "";
-        imagePreview.style.display = "none";
-    });
-
-    // ====== Submit Complaint ======
-    submitBtn.addEventListener("click", async (e) => {
-        e.preventDefault();
-
-        const complaintId = complaintIdInput.value.trim();
-        const complaintTitle = complaintTitleInput.value.trim();
-        const registeredDate = registeredDateInput.value;
-        const timeline = timelineInput.value;
-        const status = statusInput.value;
-        const resolvedDate = resolvedDateInput.value;
-        const toBeResolvedBy = toBeResolvedByInput.value.trim();
-        const complainedBy = complainedByInput.value.trim();
-        const companyDetails = companyDetailsInput.value.trim();
-        const rootCause = rootCauseInput.value.trim();
-        const correctiveAction = correctiveActionInput.value.trim();
-        const customerDetails = customerDetailsInput.value.trim();
-        const customerConfirmation = customerConfirmationInput.value;
-        const remark = remarkInput.value.trim();
-
-        if (!complaintTitle || !complainedBy) {
-            showMessage("Please fill in Complaint and Complained By fields.", true);
-            return;
-        }
-
-        const payload = {
-            app: "complaint",
-            complaintId,
-            complaint: complaintTitle,
-            referenceImage: currentImageBase64 || "",
-            registeredDate,
-            timeline,
-            status,
-            resolvedDate,
-            toBeResolvedBy,
-            complainedBy,
-            companyDetails,
-            rootCause,
-            correctiveAction,
-            customerDetails,
-            customerConfirmation,
-            remark
-        };
-
-        showMessage("Submitting complaint...");
-
-        try {
-            const res = await fetch(COMPLAINT_GAS_WEBHOOK_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-            incrementSeqAfterSubmit();
-            localStorage.removeItem(PENDING_ID_KEY);
-
-            showMessage("Complaint submitted successfully ✅", false, 4000);
-            resetComplaintForm_keepId();
-
-        } catch (err) {
-            console.error("Submit error:", err);
-            showMessage("⚠️ Error submitting complaint. Check Apps Script deployment.", true);
-        }
-    });
-
-    // ====== Reset ======
-    resetBtn.addEventListener("click", () => {
-        resetComplaintForm_keepId();
-        showMessage("Form reset. Complaint ID preserved.", false, 2500);
-    });
-
-    function resetComplaintForm_keepId() {
-        const pendingId = localStorage.getItem(PENDING_ID_KEY) || getPendingIdOrCreate();
-        complaintIdInput.value = pendingId;
-        complaintTitleInput.value = "";
-        referenceImageInput.value = "";
-        currentImageBase64 = "";
-        imagePreviewImg.src = "";
-        imagePreview.style.display = "none";
-        timelineInput.value = "";
-        statusInput.value = "Pending";
-        resolvedDateInput.value = "";
-        toBeResolvedByInput.value = "";
-        complainedByInput.value = "";
-        companyDetailsInput.value = "";
-        rootCauseInput.value = "N/A";
-        correctiveActionInput.value = "";
-        customerDetailsInput.value = "";
-        customerConfirmationInput.value = "Pending";
-        remarkInput.value = "";
-    }
-
-    function showMessage(text, isError = false, timeout = 3000) {
-        msgBox.style.display = "block";
-        msgBox.textContent = text;
-        msgBox.style.backgroundColor = isError ? "#fdecea" : "#e9f7ef";
-        msgBox.style.color = isError ? "#7f1d1d" : "#115e1b";
-        if (timeout) setTimeout(() => (msgBox.style.display = "none"), timeout);
-    }
-
-    initForm();
+  initForm();
 }
-
-
-
