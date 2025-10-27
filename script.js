@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ======== INITIALIZE ALL APPS ========
     initCertificateApp();
     initSalesQuizApp();
-    initInterviewQuiz();
+    initComplaintApp();
 });
 
 // ======== CERTIFICATE GENERATOR APP LOGIC ========
@@ -36,7 +36,7 @@ function initCertificateApp() {
     const cardElement = document.getElementById("certificateCard");
 
     let dataSubmitted = false;
-    const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycby6cBw7KGNyUIZ0RdLT4jgAi8TJ-hJFKFbPlQcFCNcvdUY66oF7NP8bbWSdEebKafU2OQ/exec"; 
+    const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw8M-UW7Xxbbh2JAsLT0EDu_eGNF7aV9pjfs0vNrz0BT-3yyyMAITiLKZ7RAIKBKHMN/exec"; 
 
     async function submitToGoogleSheet() {
         const payload = {
@@ -97,7 +97,7 @@ function initCertificateApp() {
 
 // ======== SALES SKILLS QUIZ APP LOGIC ========
 function initSalesQuizApp() {
-    const GAS_WEBHOOK_URL ="https://script.google.com/macros/s/AKfycby6cBw7KGNyUIZ0RdLT4jgAi8TJ-hJFKFbPlQcFCNcvdUY66oF7NP8bbWSdEebKafU2OQ/exec"; 
+    const GAS_WEBHOOK_URL ="https://script.google.com/macros/s/AKfycbw8M-UW7Xxbbh2JAsLT0EDu_eGNF7aV9pjfs0vNrz0BT-3yyyMAITiLKZ7RAIKBKHMN/exec"; 
     const questions = [
         {"q":"When starting to generate leads, what’s your first priority?","answer":"A","options":{"A":"Building a target list","B":"Leveraging referrals","C":"Using digital tools","D":"Attending events"}},
         {"q":"How would you begin a cold call?","answer":"D","options":{"A":"Quickly share benefits","B":"Understand needs/challenges","C":"Introduce company","D":"Connect on recent expansion"}},
@@ -165,28 +165,27 @@ function initSalesQuizApp() {
     }
 
     // Handle form submission
- // Handle form submission (FIXED FOR ANSWER SAVING)
     quizForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-    
+
         const name = document.getElementById("salesName").value.trim();
         const employeeId = document.getElementById("salesEmployeeId").value.trim();
-    
+
         if (!name || !employeeId) {
             alert("Please fill in your Name and Employee ID.");
             return;
         }
-    
+
         let totalScore = 0;
         const perQuestionResults = [];  // ✅ Ensured always built
-    
+
         questions.forEach((qData, idx) => {
             const selected = quizContainer.querySelector(`input[name="sq${idx}"]:checked`);
             const userChoice = selected ? selected.value : "N/A";
             const marks = selected ? parseInt(selected.getAttribute("data-marks") || "0", 10) : 0;
-    
+
             totalScore += marks;
-    
+
             // ✅ Short answer format for Google Sheet
             perQuestionResults.push({
                 qIndex: idx + 1,
@@ -194,12 +193,12 @@ function initSalesQuizApp() {
                 correct: qData.answer
             });
         });
-    
+
         // Show result in UI
         resultDiv.style.display = "block";
         let html = `<h2>Your Total Score: ${totalScore}</h2>`;
         html += `<p>Correct answer = 40 marks. Other options were randomly assigned 10 / 15 / 20.</p><hr/>`;
-    
+
         perQuestionResults.forEach(r => {
             const badge = (r.userChoice === r.correct) ? '✅ Correct' : '❌ Wrong';
             html += `<div class="q-result">
@@ -209,9 +208,9 @@ function initSalesQuizApp() {
                         Marks awarded: <strong>${r.userChoice === r.correct ? 40 : '10/15/20'}</strong> — ${badge}
                     </div><hr/>`;
         });
-    
+
         resultDiv.innerHTML = html;
-    
+
         // ✅ SEND TO GOOGLE SHEET WITH PROPER ANSWER FORMAT
         try {
             await fetch(GAS_WEBHOOK_URL, {
@@ -222,7 +221,7 @@ function initSalesQuizApp() {
                     name,
                     employeeId,
                     score: totalScore,
-                    details: perQuestionResults   // ✅ NOW ALWAYS INCLUDED
+                    details: perQuestionResults
                 })
             });
             resultDiv.innerHTML += `<p>✅ Result saved successfully.</p>`;
@@ -245,9 +244,214 @@ function initSalesQuizApp() {
         if (e.key === 'F12') e.preventDefault();
     });
 
-
     buildQuiz();
 }
 
+// ======== COMPLAINT REGISTER LOGIC ========
+function initComplaintApp() {
+    const COMPLAINT_GAS_WEBHOOK_URL = "https://script.google.com/a/macros/brigs-espro.com/s/AKfycbw-C2na1VQzpPdJYrp6xXRMWtJYbPzVBy8Z36saSOKYSZhmXTJmMMBDMEnsdCsCw53f/exec";
 
+    // elements
+    const complaintIdInput = document.getElementById("complaintId");
+    const complaintTitleInput = document.getElementById("complaintTitle");
+    const referenceImageInput = document.getElementById("referenceImage");
+    const imagePreview = document.getElementById("imagePreview");
+    const imagePreviewImg = document.getElementById("imagePreviewImg");
+    const clearImageBtn = document.getElementById("clearImageBtn");
 
+    const registeredDateInput = document.getElementById("registeredDate");
+    const timelineInput = document.getElementById("timeline");
+    const statusInput = document.getElementById("status");
+    const resolvedDateInput = document.getElementById("resolvedDate");
+    const toBeResolvedByInput = document.getElementById("toBeResolvedBy");
+    const complainedByInput = document.getElementById("complainedBy");
+    const companyDetailsInput = document.getElementById("companyDetails");
+    const rootCauseInput = document.getElementById("rootCause");
+    const correctiveActionInput = document.getElementById("correctiveAction");
+    const customerDetailsInput = document.getElementById("customerDetails");
+    const customerConfirmationInput = document.getElementById("customerConfirmation");
+    const remarkInput = document.getElementById("remark");
+    const submitBtn = document.getElementById("complaintSubmitBtn");
+    const resetBtn = document.getElementById("complaintResetBtn");
+    const msgBox = document.getElementById("complaintMsg");
+
+    const SEQ_KEY_PREFIX = "complaint_seq_";
+    const PENDING_ID_KEY = "complaint_pending_id";
+    let currentImageBase64 = "";
+
+    function formatDateForId(d) {
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = String(d.getFullYear());
+        return `${dd}${mm}${yyyy}`;
+    }
+
+    // --- Generate or reuse ID ---
+    function getPendingIdOrCreate() {
+        const today = new Date();
+        const datePart = formatDateForId(today);
+        const seqKey = SEQ_KEY_PREFIX + datePart;
+
+        // clear if stored ID is from a past date
+        const storedPending = localStorage.getItem(PENDING_ID_KEY);
+        if (storedPending && !storedPending.includes(datePart)) {
+            localStorage.removeItem(PENDING_ID_KEY);
+        }
+
+        const pendingNow = localStorage.getItem(PENDING_ID_KEY);
+        if (pendingNow && pendingNow.includes(datePart)) return pendingNow;
+
+        let seq = parseInt(localStorage.getItem(seqKey) || "0", 10);
+        if (seq === 0) seq = 40; // start from 40
+        const seqStr = String(seq).padStart(4, '0');
+        const newId = `CMP-${datePart}-${seqStr}`;
+        localStorage.setItem(PENDING_ID_KEY, newId);
+        localStorage.setItem(seqKey, String(seq));
+        return newId;
+    }
+
+    function incrementSeqAfterSubmit() {
+        const today = new Date();
+        const datePart = formatDateForId(today);
+        const seqKey = SEQ_KEY_PREFIX + datePart;
+        let seq = parseInt(localStorage.getItem(seqKey) || "40", 10);
+        seq++;
+        localStorage.setItem(seqKey, String(seq));
+    }
+
+    function initForm() {
+        const pendingId = getPendingIdOrCreate();
+        complaintIdInput.value = pendingId;
+
+        const today = new Date();
+        const registered = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
+        registeredDateInput.value = registered;
+
+        toBeResolvedByInput.value = "";
+        statusInput.value = "Pending";
+    }
+
+    // --- Image preview ---
+    referenceImageInput.addEventListener("change", e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+            alert("Please select an image file");
+            referenceImageInput.value = "";
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = evt => {
+            currentImageBase64 = evt.target.result;
+            imagePreviewImg.src = currentImageBase64;
+            imagePreview.style.display = "flex";
+        };
+        reader.readAsDataURL(file);
+    });
+
+    clearImageBtn.addEventListener("click", () => {
+        referenceImageInput.value = "";
+        currentImageBase64 = "";
+        imagePreviewImg.src = "";
+        imagePreview.style.display = "none";
+    });
+
+    // --- Submit ---
+    submitBtn.addEventListener("click", async e => {
+        e.preventDefault();
+        const complaintId = complaintIdInput.value.trim();
+        const complaintTitle = complaintTitleInput.value.trim();
+        const registeredDate = registeredDateInput.value;
+        const timeline = timelineInput.value;
+        const status = statusInput.value;
+        const resolvedDate = resolvedDateInput.value;
+        const toBeResolvedBy = toBeResolvedByInput.value.trim();
+        const complainedBy = complainedByInput.value.trim();
+        const companyDetails = companyDetailsInput.value.trim();
+        const rootCause = rootCauseInput.value.trim();
+        const correctiveAction = correctiveActionInput.value.trim();
+        const customerDetails = customerDetailsInput.value.trim();
+        const customerConfirmation = customerConfirmationInput.value;
+        const remark = remarkInput.value.trim();
+
+        if (!complaintTitle || !complainedBy) {
+            showMessage("Please enter Complaint title and Complained By fields.", true);
+            return;
+        }
+
+        const payload = {
+            app: "complaint",
+            complaintId,
+            complaint: complaintTitle,
+            referenceImage: currentImageBase64 || "",
+            registeredDate,
+            timeline,
+            status,
+            resolvedDate,
+            toBeResolvedBy,
+            complainedBy,
+            companyDetails,
+            rootCause,
+            correctiveAction,
+            customerDetails,
+            customerConfirmation,
+            remark
+        };
+
+        showMessage("Submitting complaint...");
+
+        try {
+            await fetch(COMPLAINT_GAS_WEBHOOK_URL, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify(payload)
+            });
+
+            incrementSeqAfterSubmit();
+            localStorage.removeItem(PENDING_ID_KEY);
+
+            showMessage("Complaint submitted successfully.", false, 4000);
+            resetComplaintForm_keepId();
+        } catch (err) {
+            console.error("Submit error:", err);
+            showMessage("Error submitting complaint. Check sheet.", true);
+        }
+    });
+
+    // --- Reset ---
+    resetBtn.addEventListener("click", () => {
+        resetComplaintForm_keepId();
+        showMessage("Form reset. Complaint ID preserved until submission.", false, 2500);
+    });
+
+    function resetComplaintForm_keepId() {
+        const pendingId = localStorage.getItem(PENDING_ID_KEY) || getPendingIdOrCreate();
+        complaintIdInput.value = pendingId;
+        complaintTitleInput.value = "";
+        referenceImageInput.value = "";
+        currentImageBase64 = "";
+        imagePreviewImg.src = "";
+        imagePreview.style.display = "none";
+        timelineInput.value = "";
+        statusInput.value = "Pending";
+        resolvedDateInput.value = "";
+        toBeResolvedByInput.value = "";
+        complainedByInput.value = "";
+        companyDetailsInput.value = "";
+        rootCauseInput.value = "N/A";
+        correctiveActionInput.value = "";
+        customerDetailsInput.value = "";
+        customerConfirmationInput.value = "Pending";
+        remarkInput.value = "";
+    }
+
+    function showMessage(text, isError = false, timeout = 3000) {
+        msgBox.style.display = "block";
+        msgBox.textContent = text;
+        msgBox.style.backgroundColor = isError ? "#fdecea" : "#e9f7ef";
+        msgBox.style.color = isError ? "#7f1d1d" : "#115e1b";
+        if (timeout) setTimeout(() => (msgBox.style.display = "none"), timeout);
+    }
+
+    initForm();
+}
