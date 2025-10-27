@@ -249,7 +249,7 @@ function initSalesQuizApp() {
 
 // ======== COMPLAINT REGISTER LOGIC ========
 function initComplaintApp() {
-    const COMPLAINT_GAS_WEBHOOK_URL = "https://script.google.com/a/macros/brigs-espro.com/s/AKfycbw-C2na1VQzpPdJYrp6xXRMWtJYbPzVBy8Z36saSOKYSZhmXTJmMMBDMEnsdCsCw53f/exec";
+    const COMPLAINT_GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxeswCfIPEW5HMALjhfDvtunDeBWUMA6SdZc8s3w4anEFfrmbNOYEZIk8TTNbK9DAwv/exec";
 
     // elements
     const complaintIdInput = document.getElementById("complaintId");
@@ -455,3 +455,4 @@ function initComplaintApp() {
 
     initForm();
 }
+
