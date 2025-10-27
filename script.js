@@ -36,7 +36,7 @@ function initCertificateApp() {
     const cardElement = document.getElementById("certificateCard");
 
     let dataSubmitted = false;
-    const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw8M-UW7Xxbbh2JAsLT0EDu_eGNF7aV9pjfs0vNrz0BT-3yyyMAITiLKZ7RAIKBKHMN/exec"; 
+    const GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzPIrdJLW44B7cZDBhKbiOlXhMJQi9NiU4CSDdgqablDbgFO9df8GCWZXrVXdfQMcmV/exec"; 
 
     async function submitToGoogleSheet() {
         const payload = {
@@ -455,4 +455,5 @@ function initComplaintApp() {
 
     initForm();
 }
+
 
