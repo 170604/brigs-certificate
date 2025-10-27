@@ -250,7 +250,7 @@ function initSalesQuizApp() {
 // ======== COMPLAINT REGISTER LOGIC ========
 function initComplaintApp() {
     // ✅ Public Google Apps Script Webhook
-    const COMPLAINT_GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxuDv1KhCKEtvUT6XN28uIw_AVdskq6iDjqF4dxWXWOLHJW_yPtaMZx047EuJTikRzR/exec";
+    const COMPLAINT_GAS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzaaKY8uSApVqpA0zS_bvMTAse2nGeN-KY9SrLgrdqH84OW5feiAvYFUTU3Lt5ux2hp/exec";
 
     // Elements
     const complaintIdInput = document.getElementById("complaintId");
@@ -462,5 +462,6 @@ function initComplaintApp() {
 
     initForm();
 }
+
 
 
