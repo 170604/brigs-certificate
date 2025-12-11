@@ -299,7 +299,7 @@ function initSalesQuizApp() {
 function initComplaintApp() {
   // ✅ Google Apps Script Webhook (public URL, not workspace-restricted)
   const COMPLAINT_GAS_WEBHOOK_URL =
-    "https://script.google.com/macros/s/AKfycbxkPigs1_QOsf99SIwHs5bZwp-uZZjpbuf5gSIN2vi8j3hI29IQhfXREjEjfSe44LlS/exec";
+    "https://script.google.com/macros/s/AKfycbxAMgz78VaQI00yWeVvXYF0jXRIYRV7LPXQio2Tjcwo1l4ipT-cOigcHXnBSHqP84Ro/exec;
 
   // === Element references ===
   const complaintIdInput = document.getElementById("complaintId");
@@ -492,3 +492,4 @@ function initComplaintApp() {
 
   initForm();
 }
+
