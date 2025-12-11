@@ -300,7 +300,6 @@ function initComplaintApp() {
   // ✅ Google Apps Script Webhook (public URL, not workspace-restricted)
   const COMPLAINT_GAS_WEBHOOK_URL =
     "https://script.google.com/macros/s/AKfycbyfbTIL4hqqx437Mq-vXwwxi7axaiyBmuo378HJhCNZ5RT_Cnp8QWyZeF4Wx5yIXV6A/exec";
-exec
   // === Element references ===
   const complaintIdInput = document.getElementById("complaintId");
   const complaintTitleInput = document.getElementById("complaintTitle");
@@ -492,3 +491,4 @@ exec
 
   initForm();
 }
+
