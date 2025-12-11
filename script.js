@@ -492,5 +492,3 @@ function initComplaintApp() {
 
   initForm();
 }
-
-
