@@ -93,6 +93,44 @@ function initCertificateApp() {
     downloadImgBtn.addEventListener('click', () => downloadAs('image'));
     document.getElementById('crtResetBtn').addEventListener('click', resetForm);
     updatePreview();
+
+    (function () {
+        const dropdownBtn = document.getElementById('dropdownBtn');
+        const valueDropdownList = document.getElementById('valueDropdownList');
+        const checkboxes = valueDropdownList.querySelectorAll('input[type="checkbox"]');
+        const valueField = document.querySelector('#certificateCard .valueField');
+        const crtResetBtn = document.getElementById('crtResetBtn');
+
+        function getSelectedValues() {
+              return Array.from(checkboxes)
+                  .filter(cb => cb.checked)
+                  .map(cb => cb.value);
+          }
+
+          function updateSelectedValues() {
+              const selected = getSelectedValues();
+              const label = selected.length ? selected.join(', ') : 'Select Values';
+              dropdownBtn.textContent = label;
+              valueField.textContent = selected.length ? selected.join(', ') : 'Values Here';
+          }
+
+          checkboxes.forEach(cb => cb.addEventListener('change', updateSelectedValues));
+
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => valueDropdownList.classList.remove('show'));
+
+        // Reset form selections
+        if (crtResetBtn) {
+            crtResetBtn.addEventListener('click', () => {
+                checkboxes.forEach(cb => cb.checked = false);
+                updateSelectedValues();
+            });
+        }
+
+        // initialize on load
+        updateSelectedValues();
+    })();
 }
 
 // ======== SALES SKILLS QUIZ APP LOGIC ========
@@ -211,24 +249,34 @@ function initSalesQuizApp() {
 
         resultDiv.innerHTML = html;
 
-        // ✅ SEND TO GOOGLE SHEET WITH PROPER ANSWER FORMAT
-        try {
-            await fetch(GAS_WEBHOOK_URL, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify({
-                    app: "salesQuiz",
-                    name,
-                    employeeId,
-                    score: totalScore,
-                    details: perQuestionResults
-                })
-            });
-            resultDiv.innerHTML += `<p>✅ Result saved successfully.</p>`;
-        } catch (err) {
-            console.error("Error saving result:", err);
-            resultDiv.innerHTML += `<p>⚠️ Could not save result.</p>`;
-        }
+      // ✅ SEND TO GOOGLE SHEET WITH PROPER ANSWER FORMAT
+      // ✅ SEND TO GOOGLE SHEET WITH INDIVIDUAL ANSWER COLUMNS
+      try {
+        const answerColumns = {};
+        perQuestionResults.forEach((r, index) => {
+          answerColumns[`Q${index + 1}`] = `User: ${r.userChoice} / Correct: ${r.correct}`;
+        });
+
+        const payload = {
+          app: "salesQuiz",
+          name,
+          employeeId,
+          score: totalScore,
+          ...answerColumns // dynamically spread into separate columns
+        };
+
+        await fetch(GAS_WEBHOOK_URL, {
+          method: "POST",
+          mode: "no-cors",
+          body: JSON.stringify(payload)
+        });
+
+        resultDiv.innerHTML += `<p>✅ Result saved successfully.</p>`;
+      } catch (err) {
+        console.error("Error saving result:", err);
+        resultDiv.innerHTML += `<p>⚠️ Could not save result.</p>`;
+      }
+
     });
 
     // Reset Quiz
@@ -251,7 +299,7 @@ function initSalesQuizApp() {
 function initComplaintApp() {
   // ✅ Google Apps Script Webhook (public URL, not workspace-restricted)
   const COMPLAINT_GAS_WEBHOOK_URL =
-    "https://script.google.com/macros/s/AKfycbyDhfHEm9lmbVi9G6folgMqEeAeLXdbFDtOHKQxUvzN2U6IaXMvb_6VW5sslWhSUNBS/exec";
+    "https://script.google.com/macros/s/AKfycbxkPigs1_QOsf99SIwHs5bZwp-uZZjpbuf5gSIN2vi8j3hI29IQhfXREjEjfSe44LlS/exec";
 
   // === Element references ===
   const complaintIdInput = document.getElementById("complaintId");
@@ -444,9 +492,3 @@ function initComplaintApp() {
 
   initForm();
 }
-
-
-
-
-
-
