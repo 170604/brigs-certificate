@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ProTools Suite - Certificate & Quiz Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Pacifico&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
     <header class="main-header">
+        <button id="logoutBtn" class="logout-btn">Logout</button>
         <img src="logo.png" alt="ProTools Logo" class="logo" />
         <h1>ProTools Suite</h1>
         <nav class="tabs">
@@ -61,7 +65,8 @@
                         <div class="card-overlay titleField">To,</div>
                         <div class="card-overlay nameField">Employee Name</div>
                         <div class="card-overlay valueField">Values Here</div>
-                        <div class="card-overlay messageField">Personalized message goes here. Thanks for all the hard work and effort!</div>
+                        <div class="card-overlay messageField">Personalized message goes here. Thanks for all the hard
+                            work and effort!</div>
                         <div class="card-overlay fromField">From Name</div>
                     </div>
                 </div>
@@ -131,9 +136,9 @@
                         <div class="input-group">
                             <label for="status">Status</label>
                             <select id="status">
-                                <option>complete</option>
-                                <option>under process</option>
-                                <option>To do</option>
+                                <option>Pending</option>
+                                <option>In Progress</option>
+                                <option>Resolved</option>
                             </select>
                         </div>
 
@@ -164,7 +169,7 @@
 
                         <div class="input-group full">
                             <label for="correctiveAction">Corrective Action</label>
-                            <textarea id="correctiveAction" rows="3"></textarea>
+                            <textarea id="correctiveAction" rows="3"> N/A</textarea>
                         </div>
 
                         <div class="input-group full">
@@ -175,9 +180,9 @@
                         <div class="input-group">
                             <label for="customerConfirmation">Customer Confirmation</label>
                             <select id="customerConfirmation">
-                                <option>Pending</option>
-                                <option>Yes</option>
-                                <option>No</option>
+                                <option>Complete</option>
+                                <option>Under process</option>
+                                <option>To do</option>
                             </select>
                         </div>
 
@@ -207,8 +212,5 @@
     <!-- Combined and refactored script -->
     <script src="script.js"></script>
 </body>
+
 </html>
-
-
-
-
