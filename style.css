@@ -43,12 +43,13 @@ body {
     background-color: var(--error-color) !important;
     /* Force red */
     color: white;
-    padding: 8px 16px;
+    padding: 6px 12px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
+    z-index: 10;
 }
 
 .logout-btn:hover {
@@ -397,6 +398,87 @@ body {
 
     .card-preview {
         order: 2;
+        width: 100%;
+        overflow: hidden;
+        /* Prevent scroll if scale isn't perfect */
+        min-height: 420px;
+        /* Ensure space for scaled card */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .main-header {
+        padding: 15px 20px;
+    }
+
+    .logout-btn {
+        top: 15px;
+        right: 20px;
+    }
+}
+
+@media (max-width: 650px) {
+    .main-container {
+        padding: 15px;
+        margin: 10px;
+    }
+
+    .form-container,
+    .card-preview {
+        min-width: 100%;
+    }
+
+    /* Scale the certificate card to fit screen */
+    #certificateCard {
+        transform-origin: center top;
+        transform: scale(calc((100vw - 60px) / 600));
+        /* 60px accounts for padding/margins */
+        margin-bottom: -150px;
+        /* Compensate for empty space after scaling */
+    }
+
+    /* Adjust text size for very small screens if needed */
+    .titleField {
+        font-size: 16px;
+    }
+
+    .nameField {
+        font-size: 24px;
+    }
+
+    .valueField {
+        font-size: 12px;
+    }
+
+    .messageField {
+        font-size: 13px;
+    }
+
+    .main-header h1 {
+        font-size: 1.5rem;
+        margin-top: 25px;
+        /* Make space for logout */
+    }
+
+    .logo {
+        height: 40px;
+    }
+
+    .tab-link {
+        padding: 8px 12px;
+        font-size: 14px;
+        flex: 1 1 auto;
+        /* Grow to fill */
+        text-align: center;
+    }
+}
+
+@media (max-width: 400px) {
+
+    /* Precise scaling for very small screens */
+    #certificateCard {
+        transform: scale(calc((100vw - 40px) / 600));
     }
 }
 
