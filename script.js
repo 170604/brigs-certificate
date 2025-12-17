@@ -366,7 +366,7 @@ function initComplaintApp() {
   // === Local storage keys ===
   const SEQ_KEY_PREFIX = "complaint_seq_";
   const PENDING_ID_KEY = "complaint_pending_id";
-  const START_NO = 52; // === CUSTOM S.No starting from 52 ===
+  const START_NO = 51; // === CUSTOM S.No starting from 52 ===
   let currentImageBase64 = "";
   let currentSNo = START_NO; // Track S.No client-side
 
@@ -525,3 +525,4 @@ function initComplaintApp() {
 
   initForm();
 }
+
