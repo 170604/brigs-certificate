@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - ProTools Suite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -12,69 +12,109 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 1.5rem;
+            box-sizing: border-box;
         }
         .login-container {
             background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 2.5rem 2rem;
+            border-radius: 14px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
             text-align: center;
         }
         .logo {
             max-width: 150px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
         h1 {
-            color: #333;
-            margin-bottom: 0.5rem;
-            font-size: 1.5rem;
+            color: #1e293b;
+            margin: 0 0 0.4rem 0;
+            font-size: 1.6rem;
+            font-weight: 700;
         }
-        p {
-            color: #666;
-            margin-bottom: 2rem;
+        .subtitle {
+            color: #64748b;
+            margin: 0 0 1.8rem 0;
+            font-size: 0.95rem;
         }
         .input-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             text-align: left;
         }
         label {
             display: block;
-            margin-bottom: 0.5rem;
-            color: #444;
-            font-weight: 500;
+            margin-bottom: 0.45rem;
+            color: #334155;
+            font-weight: 600;
+            font-size: 0.88rem;
         }
-        input[type="email"] {
+        input[type="email"],
+        input[type="text"],
+        select {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-            box-sizing: border-box; /* Important for padding */
+            padding: 0.75rem 0.85rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            background-color: #fff;
+            color: #1e293b;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        button {
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+        }
+        .hint-text {
+            font-size: 0.78rem;
+            color: #64748b;
+            margin-top: 0.35rem;
+        }
+        button[type="submit"] {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.85rem;
             background-color: #4f46e5;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 7px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
+            margin-top: 0.8rem;
         }
-        button:hover {
+        button[type="submit"]:hover {
             background-color: #4338ca;
+        }
+        button[type="submit"]:active {
+            transform: scale(0.99);
         }
         .error-msg {
             color: #dc2626;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            padding: 0.65rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
             display: none;
+            text-align: left;
+        }
+        .role-notice {
+            background-color: #f8fafc;
+            border-left: 3px solid #4f46e5;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.82rem;
+            color: #475569;
+            text-align: left;
+            margin-bottom: 1.2rem;
+            border-radius: 0 6px 6px 0;
         }
     </style>
 </head>
@@ -82,39 +122,126 @@
     <div class="login-container">
         <img src="logo.png" alt="ProTools Logo" class="logo">
         <h1>Welcome Back</h1>
-        <p>Please enter your email to continue</p>
+        <p class="subtitle">Select your access option to continue</p>
         
         <form id="loginForm">
+            <div id="errorMsg" class="error-msg"></div>
+
             <div class="input-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" placeholder="name@company.com" required>
-                <div id="errorMsg" class="error-msg"></div>
+                <label for="accessRole">Access Portal / Role</label>
+                <select id="accessRole">
+                    <option value="full">BRIGS Employee (Full Access)</option>
+                    <option value="assessment">Sales Engineer Candidate (Assessment)</option>
+                    <option value="complaintOnly">Complaint Register (Restricted Access)</option>
+                </select>
             </div>
-            <button type="submit">Login</button>
+
+            <div id="roleNotice" class="role-notice">
+                Full access to Certificate Generator, Sales Engineer Assessment, and Complaint Register. Requires @brigs-espro.com email.
+            </div>
+
+            <div class="input-group" id="nameGroup">
+                <label for="userName">Full Name <span id="nameRequiredStar" style="display:none; color: #dc2626;">*</span></label>
+                <input type="text" id="userName" placeholder="e.g., Alex Johnson">
+            </div>
+
+            <div class="input-group" id="employeeIdGroup">
+                <label for="employeeId">Employee / Candidate ID <span class="hint-text" style="display:inline;">(Optional)</span></label>
+                <input type="text" id="employeeId" placeholder="e.g., BRIGS-1042">
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email Address <span style="color: #dc2626;">*</span></label>
+                <input type="email" id="email" placeholder="name@company.com" required>
+                <div class="hint-text" id="emailHint">Must be an authorized @brigs-espro.com email for Full Access.</div>
+            </div>
+
+            <button type="submit" id="submitBtn">Login</button>
         </form>
     </div>
 
     <script>
+        const accessRoleSelect = document.getElementById('accessRole');
+        const roleNotice = document.getElementById('roleNotice');
+        const nameRequiredStar = document.getElementById('nameRequiredStar');
+        const emailHint = document.getElementById('emailHint');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMsg = document.getElementById('errorMsg');
+
+        function updateRoleUI() {
+            const role = accessRoleSelect.value;
+            errorMsg.style.display = 'none';
+
+            if (role === 'full') {
+                roleNotice.innerHTML = "Full access to Certificate Generator, Sales Engineer Assessment, and Complaint Register. Requires <strong>@brigs-espro.com</strong> email.";
+                nameRequiredStar.style.display = 'none';
+                emailHint.textContent = "Must be an authorized @brigs-espro.com email.";
+                submitBtn.textContent = "Login to ProTools";
+            } else if (role === 'assessment') {
+                roleNotice.innerHTML = "Direct access to the <strong>BRIGS Sales Engineer Qualification Test</strong> (45 minutes, 30 questions).";
+                nameRequiredStar.style.display = 'inline';
+                emailHint.textContent = "Enter your candidate email address.";
+                submitBtn.textContent = "Start Assessment";
+            } else if (role === 'complaintOnly') {
+                roleNotice.innerHTML = "Restricted access to the <strong>Complaint Register</strong> only.";
+                nameRequiredStar.style.display = 'none';
+                emailHint.textContent = "Enter your business or customer email address.";
+                submitBtn.textContent = "Access Complaint Register";
+            }
+        }
+
+        accessRoleSelect.addEventListener('change', updateRoleUI);
+        updateRoleUI();
+
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            errorMsg.style.display = 'none';
+
+            const role = accessRoleSelect.value;
             const email = document.getElementById('email').value.trim().toLowerCase();
-            const errorMsg = document.getElementById('errorMsg');
-            
+            const fullName = document.getElementById('userName').value.trim();
+            const employeeId = document.getElementById('employeeId').value.trim();
+
             if (!email) {
                 errorMsg.textContent = "Please enter your email address.";
                 errorMsg.style.display = 'block';
                 return;
             }
 
-            // Simple domain check
-            if (email.endsWith('@brigs-espro.com')) {
+            if (role === 'assessment' && !fullName) {
+                errorMsg.textContent = "Please enter your Full Name for the Candidate Assessment.";
+                errorMsg.style.display = 'block';
+                document.getElementById('userName').focus();
+                return;
+            }
+
+            // Check email domain if Full Access is selected
+            if (role === 'full') {
+                if (!email.endsWith('@brigs-espro.com')) {
+                    errorMsg.textContent = "Full Access requires an authorized @brigs-espro.com email address. For assessment or complaint register, select the appropriate portal above.";
+                    errorMsg.style.display = 'block';
+                    return;
+                }
                 localStorage.setItem('userAccessLevel', 'full');
+            } else if (role === 'assessment') {
+                localStorage.setItem('userAccessLevel', 'assessmentOnly');
             } else {
                 localStorage.setItem('userAccessLevel', 'complaintOnly');
             }
-            
-            // Store email for reference if needed
+
+            // If an @brigs-espro.com user selects assessment or complaint, but is an employee, they get the chosen view
             localStorage.setItem('userEmail', email);
+            if (fullName) {
+                localStorage.setItem('userName', fullName);
+            } else {
+                localStorage.removeItem('userName');
+            }
+
+            if (employeeId) {
+                localStorage.setItem('employeeId', employeeId);
+            } else {
+                localStorage.removeItem('employeeId');
+            }
 
             // Redirect to main app
             window.location.href = 'index.html';
