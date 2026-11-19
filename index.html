@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ProTools Suite - Certificate & Quiz Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Pacifico&display=swap"
+    <title>ProTools Suite - BRIGS Enterprise Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Pacifico&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
 </head>
@@ -17,7 +17,7 @@
         <h1>ProTools Suite</h1>
         <nav class="tabs">
             <button class="tab-link active" data-tab="certificateApp">Certificate Generator</button>
-            <button class="tab-link" data-tab="salesQuizApp">Sales Skills Quiz</button>
+            <button class="tab-link" data-tab="salesQuizApp">Sales Engineer Assessment</button>
             <button class="tab-link" data-tab="complaintApp">Complaint Register</button>
         </nav>
     </header>
@@ -73,26 +73,87 @@
             </div>
         </div>
 
-        <!-- ======== SALES SKILLS QUIZ CONTENT ======== -->
+        <!-- ======== BRIGS SALES ENGINEER ASSESSMENT CONTENT ======== -->
         <div id="salesQuizApp" class="tab-content">
-            <div class="container">
-                <h1>Sales Skills Quiz</h1>
-                <p class="desc">
-                    Fill in your details and answer all questions.<br />
-                    Correct = <b>40 marks</b>. Other choices = random (10 / 15 / 20).
-                </p>
-                <form id="salesQuizForm">
-                    <div class="user-info">
-                        <input type="text" id="salesName" placeholder="Enter your name" required />
-                        <input type="text" id="salesEmployeeId" placeholder="Enter your employee ID" required />
+            <div class="assessment-container">
+                <!-- Test Meta Header -->
+                <div class="assessment-header">
+                    <div class="badge-v2">Version 2</div>
+                    <h1>BRIGS Sales Engineer Qualification Test</h1>
+                    <p class="assessment-meta">
+                        <span>⏱️ <strong>45 minutes</strong></span> • 
+                        <span>📋 <strong>30 questions</strong></span> • 
+                        <span>🔘 <strong>Multiple choice</strong></span> • 
+                        <span>🎯 <strong>Pass mark: 70/100 (50% min per category)</strong></span>
+                    </p>
+                    <div class="assessment-instructions">
+                        <strong>Instructions:</strong> Choose ONE best answer for each question. No penalty for incorrect responses. 
+                        A basic calculator is permitted. No internet, AI tools, assistance or reference materials. 
+                        All questions carry equal raw marks (1 point each); category scores are weighted separately.
                     </div>
-                    <div id="salesQuizContainer"></div>
-                    <div class="actions">
-                        <button type="submit">Submit Quiz</button>
-                        <button type="button" id="salesQuizResetBtn">Reset</button>
+                </div>
+
+                <!-- Sticky Header: Timer & Status Bar -->
+                <div class="assessment-sticky-bar" id="assessmentStickyBar">
+                    <div class="timer-box" id="timerBox">
+                        <span class="timer-icon">⏳</span>
+                        <div class="timer-text-wrap">
+                            <span class="timer-label">Time Remaining</span>
+                            <span id="timerDisplay" class="timer-countdown">45:00</span>
+                        </div>
+                    </div>
+                    <div class="progress-box">
+                        <div class="progress-labels">
+                            <span id="answeredCounter">Answered: <strong>0 / 30</strong></span>
+                            <span id="unansweredCounter" class="badge-unanswered">30 Unanswered</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="assessmentProgressBar" class="progress-bar-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Candidate Info & Quick Navigator -->
+                <div class="candidate-bar-card">
+                    <h3>Candidate Information</h3>
+                    <div class="candidate-inputs-grid">
+                        <div class="input-field">
+                            <label for="salesName">Candidate Name <span class="req-star">*</span></label>
+                            <input type="text" id="salesName" placeholder="Full name of candidate" required />
+                        </div>
+                        <div class="input-field">
+                            <label for="salesEmployeeId">Employee / Candidate ID</label>
+                            <input type="text" id="salesEmployeeId" placeholder="e.g., BRIGS-1042" />
+                        </div>
+                        <div class="input-field">
+                            <label for="salesDate">Test Date <span class="req-star">*</span></label>
+                            <input type="date" id="salesDate" required />
+                        </div>
+                    </div>
+
+                    <!-- Question Navigator Pills -->
+                    <div class="nav-pills-container">
+                        <div class="nav-pills-title">Quick Question Navigator (click to jump):</div>
+                        <div class="nav-pills-grid" id="questionNavPills">
+                            <!-- Populated dynamically (1..30) -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form for Assessment Questions -->
+                <form id="salesQuizForm">
+                    <div id="salesQuizContainer">
+                        <!-- Questions 1-30 populated dynamically with Section Dividers -->
+                    </div>
+
+                    <div class="assessment-actions">
+                        <button type="submit" id="submitAssessmentBtn" class="btn-submit-assessment">Submit Assessment</button>
+                        <button type="button" id="salesQuizResetBtn" class="btn-reset-assessment">Reset All Answers</button>
                     </div>
                 </form>
-                <div id="salesResult" class="result"></div>
+
+                <!-- Assessment Results Scorecard -->
+                <div id="salesResult" class="assessment-result-wrapper" style="display: none;"></div>
             </div>
         </div>
 
@@ -214,4 +275,3 @@
 </body>
 
 </html>
-
